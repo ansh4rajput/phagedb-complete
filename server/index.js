@@ -38,7 +38,9 @@ function tokenUserId(token){
     if(!payload||!signature)return null;
     const expected=crypto.createHmac('sha256',sessionSecret).update(payload).digest('base64url');
     if(signature.length!==expected.length||!crypto.timingSafeEqual(Buffer.from(signature),Buffer.from(expected)))return null;
-    return JSON.parse(Buffer.from(payload,'base64url').toString('utf8')).userId||null;
+    const session=JSON.parse(Buffer.from(payload,'base64url').toString('utf8'));
+    if(!session.issuedAt||Date.now()-session.issuedAt>7*24*60*60*1000)return null;
+    return session.userId||null;
   }catch{return null;}
 }
 function auth(req,res,next){
