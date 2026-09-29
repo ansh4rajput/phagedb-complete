@@ -26,7 +26,7 @@ export async function api(path, options = {}) {
 export const getPhages = (qs='') => api(`/phages${qs}`);
 export const getPhage = (id) => api(`/phages/${encodeURIComponent(id)}`);
 export const getStats = () => api('/stats');
-export const login = (email, password) => api('/auth/login', { method:'POST', body: JSON.stringify({ email, password }) });
+export const login = (email, password) => api('/session/login', { method:'POST', body: JSON.stringify({ email, password }) });
 export const me = () => api('/me');
 export const createPhage = (payload) => api('/phages', { method:'POST', body: JSON.stringify(payload) });
 export const updatePhage = (id, payload) => api(`/phages/${id}`, { method:'PUT', body: JSON.stringify(payload) });

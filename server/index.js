@@ -14,7 +14,7 @@ const rootDir = path.resolve(__dirname, '..');
 const dataFile = process.env.VERCEL ? '/tmp/phagedb-data.json' : path.join(__dirname, 'data.json');
 const app = express();
 const PORT = Number(process.env.PORT || 8787);
-const sessions = new Map();
+const sessionSecret = process.env.SESSION_SECRET || 'phagedb-demo-session-secret-change-in-production';
 
 app.use(cors());
 app.use(express.json({ limit:'12mb' }));
@@ -27,9 +27,23 @@ function ensureDb() {
 function readDb(){ ensureDb(); return JSON.parse(fs.readFileSync(dataFile,'utf8')); }
 function writeDb(db){ fs.writeFileSync(dataFile, JSON.stringify(db,null,2)); }
 function safeUser(u){ const {password,...rest}=u; return rest; }
+function createToken(userId){
+  const payload=Buffer.from(JSON.stringify({userId,issuedAt:Date.now()})).toString('base64url');
+  const signature=crypto.createHmac('sha256',sessionSecret).update(payload).digest('base64url');
+  return `${payload}.${signature}`;
+}
+function tokenUserId(token){
+  try{
+    const [payload,signature]=String(token||'').split('.');
+    if(!payload||!signature)return null;
+    const expected=crypto.createHmac('sha256',sessionSecret).update(payload).digest('base64url');
+    if(signature.length!==expected.length||!crypto.timingSafeEqual(Buffer.from(signature),Buffer.from(expected)))return null;
+    return JSON.parse(Buffer.from(payload,'base64url').toString('utf8')).userId||null;
+  }catch{return null;}
+}
 function auth(req,res,next){
   const token=(req.headers.authorization||'').replace(/^Bearer\s+/,'');
-  const userId=sessions.get(token);
+  const userId=tokenUserId(token);
   if(!userId) return res.status(401).json({message:'Please sign in to continue.'});
   const db=readDb(); const user=db.users.find(u=>u.id===userId);
   if(!user) return res.status(401).json({message:'Session expired.'});
@@ -54,16 +68,17 @@ function audit(db, user, action, phageId, details={}){
 
 app.get('/api/health',(req,res)=>res.json({ok:true,service:'PhageDB API',time:new Date().toISOString()}));
 app.get('/api',(req,res)=>res.redirect(process.env.NODE_ENV==='production'?'/':'http://localhost:5173/'));
-app.post('/api/auth/login',(req,res)=>{
+function loginHandler(req,res){
   const {email,password}=req.body||{}; const db=readDb();
   const user=db.users.find(u=>u.email.toLowerCase()===String(email||'').toLowerCase()&&u.password===password);
   if(!user) return res.status(401).json({message:'Invalid email or password.'});
-  const token=crypto.randomBytes(24).toString('hex'); sessions.set(token,user.id);
+  const token=createToken(user.id);
   res.json({token,user:safeUser(user)});
-});
-app.post('/api/auth/logout',auth,(req,res)=>{
-  const token=(req.headers.authorization||'').replace(/^Bearer\s+/,''); sessions.delete(token); res.json({ok:true});
-});
+}
+app.post('/api/session/login',loginHandler);
+app.post('/api/auth/login',loginHandler);
+app.post('/api/session/logout',auth,(req,res)=>res.json({ok:true}));
+app.post('/api/auth/logout',auth,(req,res)=>res.json({ok:true}));
 app.get('/api/me',auth,(req,res)=>res.json({user:safeUser(req.user)}));
 
 app.get('/api/stats',(req,res)=>{
