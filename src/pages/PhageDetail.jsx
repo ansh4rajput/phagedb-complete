@@ -9,15 +9,16 @@ import GrowthCurve from '../components/GrowthCurve.jsx';
 
 const API_BASE=import.meta.env.VITE_API_BASE||(import.meta.env.DEV?'http://localhost:8787/api':'/api');
 export default function PhageDetail(){
-  const {id}=useParams(); const [p,setP]=useState(null); const [loading,setLoading]=useState(true); const [share,setShare]=useState(false); const [copied,setCopied]=useState(false);
-  useEffect(()=>{setLoading(true);getPhage(id).then(r=>setP(r.item)).finally(()=>setLoading(false));},[id]);
+  const {id}=useParams(); const [p,setP]=useState(null); const [loading,setLoading]=useState(true); const [error,setError]=useState(''); const [share,setShare]=useState(false); const [copied,setCopied]=useState(false);
+  useEffect(()=>{let active=true;setLoading(true);setP(null);setError('');getPhage(id).then(r=>{if(active)setP(r.item)}).catch(e=>{if(active)setError(e.message||'Unable to load this record.')}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[id]);
   const quality=useMemo(()=>p?recordQuality(p):0,[p]);
   if(loading)return <div className="page-width detail-loading"><div className="skeleton detail-hero-skeleton"/>{[1,2,3,4,5,6].map(x=><div className="skeleton detail-section-skeleton" key={x}/>)}</div>;
-  if(!p)return <div className="page-width empty-state"><h2>Record not found</h2><Link className="outline-button" to="/database">BACK TO DATABASE</Link></div>;
+  if(!p)return <div className="page-width empty-state"><h2>{error||'Record not found'}</h2><p>The record could not be opened. Return to the repository and try again.</p><Link className="outline-button" to="/database">BACK TO DATABASE</Link></div>;
   const cite=`PhageDB. ${p.name} (${p.repositoryId}). ${p.institute||'Repository record'}. Version ${p.version||'1.0'}. ${window.location.href}`;
   const copyCitation=async()=>{await navigator.clipboard.writeText(cite);setCopied(true);setTimeout(()=>setCopied(false),1400)};
   return <div className="page-width detail-page">
     <div className="profile-toolbar"><Link to="/database" className="back-link"><ArrowLeft/> Back to repository</Link><div className="detail-actions"><button className="outline-button" onClick={()=>setShare(true)}><Share2/> Share</button><button className="outline-button" onClick={copyCitation}>{copied?<Check/>:<Copy/>} Cite</button><button className="icon-button big" onClick={()=>window.print()} title="Print / Save PDF"><Printer/></button>{localStorage.getItem('phagedb_token')&&<Link className="icon-button big" to={`/edit/${p.id}`} title="Edit record"><Edit3/></Link>}</div></div>
+    <div className="print-masthead"><img src="/gtu-logo.png" alt="Gujarat Technological University"/><div><strong>GUJARAT TECHNOLOGICAL UNIVERSITY</strong><span>BACTERIOPHAGE REPOSITORY · SCIENTIFIC RECORD</span></div></div>
     <header className="profile-heading"><span>SCIENTIFIC REPOSITORY RECORD</span><h1>PHAGE PROFILE — {p.name}</h1><p>{p.repositoryId} · {p.accession} · {p.host}</p><div className="identity-badges"><span className="status-badge"><BadgeCheck/> {p.status}</span><span>{p.phageType}</span><span>{p.genomeType}</span><span>{p.visibility||'Public'}</span><span>Version {p.version||'1.0'}</span></div><div className="quality-row"><div><span>Metadata completeness</span><strong>{quality}%</strong></div><div className="quality-track"><i style={{width:`${quality}%`}}/></div></div></header>
 
     <div className="profile-grid">
@@ -42,7 +43,7 @@ export default function PhageDetail(){
       <SectionCard number="19" title="APPLICATIONS" icon={FlaskConical}><div className="tag-cloud">{(p.applications||[]).map(x=><span key={x}>{x}</span>)}{!(p.applications||[]).length&&<span className="muted">No applications recorded.</span>}</div></SectionCard>
       <SectionCard number="20" title="PUBLICATIONS" icon={BookOpen}><div className="publication-list">{(p.publications||[]).map((x,i)=><div key={i}><FileText/><span>{x}</span></div>)}{!(p.publications||[]).length&&<span className="muted">No publications linked.</span>}</div></SectionCard>
       <SectionCard number="21" title="REPOSITORY METADATA" icon={ShieldCheck}><KV label="Date added" value={fmtDate(p.dateAdded||p.createdAt)}/><KV label="Last updated" value={fmtDate(p.lastUpdated||p.updatedAt)}/><KV label="Verified by" value={p.verifiedBy}/><KV label="Curator" value={p.curator}/><KV label="Data version" value={p.version}/><KV label="Quality status" value={p.qualityStatus}/><KV label="Availability" value={p.visibility}/></SectionCard>
-      <SectionCard title="ADDITIONAL RESEARCH TOOLS" icon={Wrench} className="wide-section"><div className="tool-grid">{(p.relatedTools||[]).map(x=><button key={x} className="tool-tile" title="Integration-ready feature"><Wrench/><span>{x}</span><small>Integration-ready</small></button>)}{!(p.relatedTools||[]).length&&<p className="muted">Add similarity, phylogeny and comparative genomics integrations as sequence data becomes available.</p>}</div></SectionCard>
+      <SectionCard title="ADDITIONAL RESEARCH TOOLS" icon={Wrench} className="wide-section optional-tools-section"><div className="tool-grid">{(p.relatedTools||[]).map(x=><button key={x} className="tool-tile" title="Integration-ready feature"><Wrench/><span>{x}</span><small>Integration-ready</small></button>)}{!(p.relatedTools||[]).length&&<p className="muted">Add similarity, phylogeny and comparative genomics integrations as sequence data becomes available.</p>}</div></SectionCard>
     </div>
     <div className="record-citation"><strong>Suggested citation</strong><span>{cite}</span><button onClick={copyCitation}>{copied?<Check/>:<Copy/>}</button></div>
     {share&&<ShareModal phage={p} onClose={()=>setShare(false)}/>} 

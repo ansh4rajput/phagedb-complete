@@ -12,7 +12,7 @@ export default function Resources(){
       <Resource icon={FileText} title="Protocols & SOPs" text="Link reusable experimental methods to each record." items={['Isolation & enrichment','Propagation','Plaque / spot assays','Purification & DNA extraction','TEM preparation']}/>
     </div>
     <section className="resource-callout"><div><Database/><div><h2>Metadata CSV template</h2><p>Starter columns for bulk preparation before entering full characterization details.</p></div></div><button className="primary-button" onClick={download}><Download/> DOWNLOAD TEMPLATE</button></section>
-    <section className="resource-callout"><div><Code2/><div><h2>Repository API</h2><p>Read access is available through the demo REST API. Production deployment should add API keys, rate limits and documented schemas.</p><code>GET /api/phages · GET /api/phages/:id · GET /api/stats</code></div></div></section>
+    <section className="resource-callout"><div><Code2/><div><h2>Repository API</h2><p>Public read access is available through the repository REST API. Authenticated workflows enforce role-based permissions.</p><code>GET /api/phages · GET /api/phages/:id · GET /api/stats</code></div></div></section>
     <section className="resource-callout"><div><BookOpen/><div><h2>Recommended governance before launch</h2><p>Define submission ownership, curator responsibilities, evidence standards, accession policy, takedown/versioning rules, embargo handling, licensing and retention.</p></div></div></section>
   </div>
 }

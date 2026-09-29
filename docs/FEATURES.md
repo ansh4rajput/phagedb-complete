@@ -6,7 +6,7 @@
 - Detailed scientific phage profile
 - QR sharing
 - Citation text
-- JSON / CSV / FASTA demo downloads
+- JSON / CSV / FASTA downloads
 - Compare up to 3 phages
 - Researcher submissions
 - Draft / pending / verified / rejected states

@@ -5,7 +5,7 @@ import { api, changeStatus } from '../api.js';
 
 export default function Dashboard(){
   const [d,setD]=useState(null); const [error,setError]=useState(''); const nav=useNavigate();
-  const load=()=>api('/dashboard').then(setD).catch(e=>{setError(e.message);if(e.message.includes('sign'))nav('/login',{state:{from:'/dashboard'}})}); useEffect(load,[]);
+  const load=()=>api('/dashboard').then(setD).catch(e=>{setError(e.message);if(e.message.includes('sign'))nav('/login',{state:{from:'/dashboard'}})}); useEffect(()=>{load()},[]);
   const status=async(id,s)=>{await changeStatus(id,s);load();};
   if(!d)return <div className="page-width dashboard-page">{error?<div className="alert error"><AlertCircle/>{error}</div>:<div className="skeleton detail-hero-skeleton"/>}</div>;
   return <div className="page-width dashboard-page"><div className="page-title-row"><div><h1>REPOSITORY DASHBOARD</h1><p>{d.user.name} · {d.user.role} · {d.user.institute}</p></div><Link to="/add" className="primary-button"><Plus/> ADD PHAGE</Link></div>

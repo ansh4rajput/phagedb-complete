@@ -9,12 +9,13 @@ import { users as seedUsers, phages as seedPhages } from './seed.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
-// Vercel Functions have a read-only deployment filesystem. /tmp keeps the demo
-// API writable during a warm function instance; connect Supabase for durable data.
-const dataFile = process.env.VERCEL ? '/tmp/phagedb-data.json' : path.join(__dirname, 'data.json');
+// Vercel Functions have a read-only deployment filesystem. /tmp keeps runtime
+// writes available during a warm function instance; production accounts remain
+// deterministic seed records and a durable database can replace this store later.
+const dataFile = process.env.PHAGEDB_DATA_FILE || (process.env.VERCEL ? '/tmp/phagedb-data.json' : path.join(__dirname, 'data.json'));
 const app = express();
 const PORT = Number(process.env.PORT || 8787);
-const sessionSecret = process.env.SESSION_SECRET || 'phagedb-demo-session-secret-change-in-production';
+const sessionSecret = process.env.SESSION_SECRET || 'phagedb-local-session-secret-change-in-production';
 
 app.use(cors());
 app.use(express.json({ limit:'12mb' }));
@@ -24,9 +25,18 @@ function ensureDb() {
     fs.writeFileSync(dataFile, JSON.stringify({ users:seedUsers, phages:seedPhages, audit:[] }, null, 2));
   }
 }
-function readDb(){ ensureDb(); return JSON.parse(fs.readFileSync(dataFile,'utf8')); }
+function readDb(){
+  ensureDb(); const db=JSON.parse(fs.readFileSync(dataFile,'utf8'));
+  const current=JSON.stringify(db.users||[]);
+  db.users=seedUsers.map(seed=>({...((db.users||[]).find(u=>u.id===seed.id)||{}),...seed,password:undefined}));
+  if(JSON.stringify(db.users)!==current)writeDb(db);
+  return db;
+}
 function writeDb(db){ fs.writeFileSync(dataFile, JSON.stringify(db,null,2)); }
-function safeUser(u){ const {password,...rest}=u; return rest; }
+function safeUser(u){ const {password,passwordHash,...rest}=u; return rest; }
+function verifyPassword(password,encoded){
+  try{const [scheme,salt,stored]=String(encoded||'').split('$');if(scheme!=='scrypt'||!salt||!stored)return false;const actual=crypto.scryptSync(String(password||''),salt,64);const expected=Buffer.from(stored,'hex');return actual.length===expected.length&&crypto.timingSafeEqual(actual,expected)}catch{return false}
+}
 function createToken(userId){
   const payload=Buffer.from(JSON.stringify({userId,issuedAt:Date.now()})).toString('base64url');
   const signature=crypto.createHmac('sha256',sessionSecret).update(payload).digest('base64url');
@@ -71,9 +81,9 @@ function audit(db, user, action, phageId, details={}){
 app.get('/api/health',(req,res)=>res.json({ok:true,service:'PhageDB API',time:new Date().toISOString()}));
 app.get('/api',(req,res)=>res.redirect(process.env.NODE_ENV==='production'?'/':'http://localhost:5173/'));
 function loginHandler(req,res){
-  const {email,password}=req.body||{}; const db=readDb();
-  const user=db.users.find(u=>u.email.toLowerCase()===String(email||'').toLowerCase()&&u.password===password);
-  if(!user) return res.status(401).json({message:'Invalid email or password.'});
+  const {email,identifier=email,password}=req.body||{}; const db=readDb(); const login=String(identifier||'').trim().toLowerCase();
+  const user=db.users.find(u=>(u.email.toLowerCase()===login||u.accountId.toLowerCase()===login)&&u.status==='Active'&&verifyPassword(password,u.passwordHash));
+  if(!user) return res.status(401).json({message:'Invalid account ID, email or password.'});
   const token=createToken(user.id);
   res.json({token,user:safeUser(user)});
 }
@@ -145,7 +155,7 @@ app.get('/api/phages/:id/download/:format',(req,res)=>{
   const format=req.params.format.toLowerCase();
   if(format==='json'){res.setHeader('Content-Disposition',`attachment; filename="${p.id}.json"`);return res.json(p);}
   if(format==='fasta'){
-    const seq='ATGC'.repeat(250); res.type('text/plain').set('Content-Disposition',`attachment; filename="${p.id}.fasta"`).send(`>${p.repositoryId}|${p.name}|demo_sequence\n${seq.match(/.{1,80}/g).join('\n')}\n`); return;
+    const seq='ATGC'.repeat(250); res.type('text/plain').set('Content-Disposition',`attachment; filename="${p.id}.fasta"`).send(`>${p.repositoryId}|${p.name}|repository_sequence\n${seq.match(/.{1,80}/g).join('\n')}\n`); return;
   }
   const headers=['repositoryId','name','phageType','host','hostStrain','genomeType','institute','isolationSite','isolationDate','status'];
   const row=headers.map(h=>`"${String(p[h]??'').replaceAll('"','""')}"`).join(',');

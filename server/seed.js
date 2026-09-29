@@ -1,7 +1,7 @@
 export const users = [
-  { id:'u1', name:'Ansh Rajput', email:'researcher@phagedb.local', password:'phage123', role:'researcher', institute:'Gujarat Technological University' },
-  { id:'u2', name:'Dr. Curator', email:'curator@phagedb.local', password:'curator123', role:'curator', institute:'Gujarat Technological University' },
-  { id:'u3', name:'Repository Admin', email:'admin@phagedb.local', password:'admin123', role:'admin', institute:'Gujarat Technological University' }
+  { id:'u1', accountId:'GTU-RES-001', name:'Repository Researcher', email:'researcher@phagedb.gtu.ac.in', passwordHash:'scrypt$fbd2a631fbb6ebc45c5a25044be0afe1$3fe74bb929a2d5a0347d59aab3ec91da25d55701b1329e92a3091f7dd6b978ce94f48a9c9387b9095418ec7ed4031cf77d26caa23567bd5390ae4440ffb99589', role:'researcher', status:'Active', institute:'Gujarat Technological University' },
+  { id:'u2', accountId:'GTU-CUR-001', name:'Repository Curator', email:'curator@phagedb.gtu.ac.in', passwordHash:'scrypt$182f926b6d4b0c948627f49df285195b$88e9ecf5c062f8946ca84a4ded89a2b1c609b9df79326c59327aa19872a3810fbc4db333d3f87df2d4d4bad5d7f9e84862c3cec9c77b723ff4860b40b30d2727', role:'curator', status:'Active', institute:'Gujarat Technological University' },
+  { id:'u3', accountId:'GTU-ADM-001', name:'Repository Administrator', email:'admin@phagedb.gtu.ac.in', passwordHash:'scrypt$e22c4368feaa8324cecc0935497bdd01$d7f2ee82ba56c528f94ccf6cb4002039f623334f5db1f48077f8cad0af61746ed53f4d034ff4d69d56caf6f136701d5f5feb6916d23586d69b0032d11025bc90', role:'admin', status:'Active', institute:'Gujarat Technological University' }
 ];
 
 const common = {

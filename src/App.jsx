@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Landing from './pages/Landing.jsx';
 import Database from './pages/Database.jsx';
@@ -14,6 +14,7 @@ import Contact from './pages/Contact.jsx';
 
 export default function App(){
   return <div className="app-shell">
+    <RouteEffects/>
     <Navbar/>
     <main><Routes>
       <Route path="/" element={<Landing/>}/>
@@ -30,4 +31,10 @@ export default function App(){
       <Route path="*" element={<Navigate to="/" replace/>}/>
     </Routes></main>
   </div>
+}
+
+function RouteEffects(){
+  const {pathname}=useLocation();
+  React.useEffect(()=>{window.scrollTo({top:0,left:0,behavior:'auto'})},[pathname]);
+  return null;
 }

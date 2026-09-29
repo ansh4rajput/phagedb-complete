@@ -30,12 +30,12 @@ A full rebuild of the existing dark-neon PhageDB concept, expanded into a detail
   21. Repository metadata
 - QR sharing and direct links.
 - Citation copy tool.
-- JSON / CSV / demo FASTA downloads.
+- JSON / CSV / FASTA downloads.
 - Print / Save-as-PDF profile support.
 - Up-to-three-phage comparison.
 - Multi-step add/edit form.
 - Draft → Pending Review → Verified / Rejected curation workflow.
-- Researcher, curator and admin demo roles.
+- Active researcher, curator and administrator accounts with enforced permissions.
 - Record completeness indicator.
 - Audit trail and version increment on edits.
 - Public / embargoed / private visibility field.
@@ -43,13 +43,13 @@ A full rebuild of the existing dark-neon PhageDB concept, expanded into a detail
 - Contact-form persistence.
 - Production-oriented Supabase/Postgres schema in `docs/supabase-schema.sql`.
 
-## Demo accounts
+## Repository accounts
 
-- Researcher: `researcher@phagedb.local` / `phage123`
-- Curator: `curator@phagedb.local` / `curator123`
-- Admin: `admin@phagedb.local` / `admin123`
+- Researcher account ID: `GTU-RES-001`
+- Curator account ID: `GTU-CUR-001`
+- Administrator account ID: `GTU-ADM-001`
 
-These are intentionally demo-only credentials.
+Passwords are issued separately and stored only as salted scrypt hashes in the repository data. The login accepts either an account ID or the account's institutional email.
 
 ## Local setup
 
@@ -72,13 +72,13 @@ The Express server will serve the generated `dist/` directory when present.
 
 ## Backend used in this package
 
-The runnable demo uses a small JSON-file persistence layer (`server/data.json`) created automatically on first start. This keeps the project easy to inspect and run without database configuration.
+The runnable package uses a small JSON-file persistence layer (`server/data.json`) created automatically on first start. This keeps the project easy to inspect and run without database configuration.
 
 For a real university/public repository, use PostgreSQL/Supabase (or another managed relational DB) and object storage. The included `docs/supabase-schema.sql` provides a production-oriented starting point.
 
 ## Important production changes before real launch
 
-1. Replace demo login with institutional SSO / Supabase Auth / Auth0.
+1. Connect the existing role-based login to institutional SSO / Supabase Auth / Auth0 when GTU identity-provider access is available.
 2. Store FASTA, FASTQ, GBK, images and SOPs in object storage, not JSON.
 3. Validate taxonomy, host names, genome types and culture collection identifiers using controlled vocabularies.
 4. Add checksums, file versions and immutable accession identifiers.
@@ -108,4 +108,4 @@ For a real university/public repository, use PostgreSQL/Supabase (or another man
 
 ## Notes
 
-The supplied screenshots were used as visual and information-architecture references. Scientific sample records in this demo should be treated as demonstration content, not as validated repository data.
+The supplied screenshots were used as visual and information-architecture references. Scientific sample records must be curator-validated before they are treated as authoritative repository data.

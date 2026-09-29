@@ -47,7 +47,7 @@ export default function Landing(){
     </section>
 
     <section className="cta-section page-width"><div><span className="eyebrow">CONTRIBUTE TO THE COLLECTION</span><h2>Turn a phage discovery into a reusable scientific record.</h2><p>Submit core identity first, then progressively enrich the record with host range, growth, genomic, laboratory, publication and protocol data.</p></div><Link className="primary-button" to="/add">ADD NEW PHAGE <ArrowRight/></Link></section>
-    <footer className="footer"><div>PHAGE<span>DB</span> · Collaborative Bacteriophage Repository</div><p>Demo implementation — institutional content, governance and scientific validation should be configured before production deployment.</p></footer>
+    <footer className="footer"><div>PHAGE<span>DB</span> · Gujarat Technological University</div><p>Scientific records are versioned, curator-reviewed and presented for research collaboration and responsible reuse.</p></footer>
   </div>
 }
 function Info({icon:Icon,title,text}){return <article className="intro-card"><Icon/><h3>{title}</h3><p>{text}</p><span>Learn more <ArrowRight/></span></article>}
