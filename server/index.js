@@ -9,7 +9,9 @@ import { users as seedUsers, phages as seedPhages } from './seed.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
-const dataFile = path.join(__dirname, 'data.json');
+// Vercel Functions have a read-only deployment filesystem. /tmp keeps the demo
+// API writable during a warm function instance; connect Supabase for durable data.
+const dataFile = process.env.VERCEL ? '/tmp/phagedb-data.json' : path.join(__dirname, 'data.json');
 const app = express();
 const PORT = Number(process.env.PORT || 8787);
 const sessions = new Map();
@@ -138,4 +140,6 @@ if(fs.existsSync(dist)){
   app.use(express.static(dist));
   app.get('*',(req,res,next)=>{ if(req.path.startsWith('/api')) return next(); res.sendFile(path.join(dist,'index.html')); });
 }
-app.listen(PORT,()=>console.log(`PhageDB API running on http://localhost:${PORT}`));
+if (!process.env.VERCEL) app.listen(PORT,()=>console.log(`PhageDB API running on http://localhost:${PORT}`));
+
+export default app;
