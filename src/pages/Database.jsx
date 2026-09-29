@@ -13,7 +13,7 @@ export default function Database(){
   const clear=()=>setF({q:'',type:'',genome:'',status:'',institute:'',sort:'newest'});
   return <div className="page-width database-page">
     <div className="page-title-row"><div><h1>PHAGE DATABASE</h1><p>{data.total??data.items.length} phages documented</p></div><Link to="/add" className="primary-button"><Plus/> ADD NEW PHAGE</Link></div>
-    <div className="search-panel">
+    <div className="search-panel" id="search">
       <label className="search-box"><Search/><input value={f.q} onChange={e=>setF({...f,q:e.target.value})} placeholder="Search phages by name, host, type, institute, accession..."/></label>
       <div className="filter-row">
         <span><SlidersHorizontal/> FILTERS</span>

@@ -5,4 +5,4 @@ export default function SectionCard({number,title,icon:Icon,children,className='
     <div className="section-body">{children}</div>
   </section>
 }
-export function KV({label,value}){return <div className="kv"><span>{label}</span><strong>{value===undefined||value===null||value===''?'—':String(value)}</strong></div>}
+export function KV({label,value}){const missing=value===undefined||value===null||value===''||value==='—';return <div className="kv"><span>{label}</span><strong className={missing?'not-recorded':''}>{missing?'Not recorded':String(value)}</strong></div>}

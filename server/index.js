@@ -51,6 +51,7 @@ function audit(db, user, action, phageId, details={}){
 }
 
 app.get('/api/health',(req,res)=>res.json({ok:true,service:'PhageDB API',time:new Date().toISOString()}));
+app.get('/api',(req,res)=>res.redirect(process.env.NODE_ENV==='production'?'/':'http://localhost:5173/'));
 app.post('/api/auth/login',(req,res)=>{
   const {email,password}=req.body||{}; const db=readDb();
   const user=db.users.find(u=>u.email.toLowerCase()===String(email||'').toLowerCase()&&u.password===password);

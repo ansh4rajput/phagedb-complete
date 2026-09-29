@@ -1,12 +1,12 @@
 import React from 'react';
 
 export default function Brand({compact=false}){
-  return <div className={`brand ${compact?'brand-compact':''}`} aria-label="PhageDB">
+  return <div className={`brand ${compact?'brand-compact':''}`} aria-label="Gujarat Technological University Bacteriophage Repository">
     <svg className="brand-mark" viewBox="0 0 64 64" role="img" aria-hidden="true">
-      <path d="M32 8 22 14v12l10 6 10-6V14Z" fill="none" stroke="currentColor" strokeWidth="3"/>
-      <path d="M32 32v10m-7-5h14M32 42l-8 9m8-9 8 9m-8-9v11" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
-      <circle cx="18" cy="15" r="2" fill="currentColor"/><circle cx="46" cy="49" r="2" fill="currentColor"/>
+      <path d="M32 4 53 12v18c0 14-8 24-21 30C19 54 11 44 11 30V12Z" fill="#073273" stroke="#c53332" strokeWidth="2"/>
+      <path d="M17 17h30M20 17v19h24V17M25 17v19M39 17v19M20 27h24" fill="none" stroke="#fff" strokeWidth="2"/>
+      <path d="M18 43c8 3 20 3 28 0M24 48c5 2 11 2 16 0" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
     </svg>
-    <span>PHAGE<span className="brand-purple">DB</span></span>
+    <span className="brand-words"><strong>GUJARAT TECHNOLOGICAL UNIVERSITY</strong><small>INNOVATION · INTEGRATION · EXCELLENCE</small></span>
   </div>
 }

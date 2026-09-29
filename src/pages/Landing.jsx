@@ -1,7 +1,6 @@
 import React, {useEffect,useState} from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ArrowRight, Microscope, ShieldPlus, Target, Database, Dna, Snowflake, Globe2, Handshake, FlaskConical, BadgeCheck, Users, Building2 } from 'lucide-react';
-import PhageArt from '../components/PhageArt.jsx';
 import { getStats, getPhages } from '../api.js';
 import PhageCard from '../components/PhageCard.jsx';
 
@@ -9,22 +8,22 @@ export default function Landing(){
   const [stats,setStats]=useState({total:16,verified:0,hosts:0,institutes:0}); const [featured,setFeatured]=useState([]);
   useEffect(()=>{getStats().then(setStats).catch(()=>{});getPhages('?sort=newest').then(r=>setFeatured(r.items.slice(0,3))).catch(()=>{});},[]);
   return <div className="landing">
-    <section className="hero">
+    <section className="hero institutional-hero">
       <div className="hero-copy">
-        <span className="eyebrow">GUJARAT BACTERIOPHAGE REPOSITORY</span>
-        <h1>DOCUMENT. DISCOVER.<br/><em>SHARE PHAGES.</em></h1>
-        <p>A collaborative bacteriophage repository for structured discovery records, biological characterization, genomic metadata, preservation details and reusable research data.</p>
-        <div className="hero-actions"><Link className="primary-button" to="/database"><Search/> EXPLORE PHAGES</Link><Link className="outline-button" to="/add"><FlaskConical/> CONTRIBUTE A PHAGE</Link></div>
-        <div className="hero-mini-stats"><span><strong>{stats.total}</strong> records</span><span><strong>{stats.hosts}</strong> hosts</span><span><strong>{stats.institutes}</strong> institutes</span><span><strong>{stats.verified}</strong> verified</span></div>
+        <span className="hero-gtu">GTU</span>
+        <h1>BACTERIOPHAGE<br/>REPOSITORY</h1>
+        <h2>Exploring Phages. Combating AMR. Building a Healthier Future.</h2>
+        <p>A dedicated repository of bacteriophages isolated from diverse environments across Gujarat and beyond. We discover, characterize, preserve and share phages to accelerate research and develop phage-based solutions against antimicrobial resistance.</p>
+        <div className="hero-actions"><Link className="primary-button" to="/database"><Search/> Explore Phages</Link><Link className="outline-button" to="/database"><Search/> Search Repository</Link></div>
       </div>
-      <div className="hero-visual"><div className="hero-orbit orbit-a"/><div className="hero-orbit orbit-b"/><PhageArt large/><div className="amr-card"><span className="eyebrow">ABOUT AMR</span><p>Antimicrobial resistance makes bacterial infections harder to treat. Phages offer a highly specific biological route for investigating and targeting bacterial hosts.</p><div><ShieldPlus/> Research-ready phage records</div></div></div>
+      <aside className="amr-card"><span className="eyebrow">ABOUT AMR</span><p>Antimicrobial resistance arises when bacteria evolve to survive the medicines designed to kill them.</p><p>AMR is a global health crisis causing infections that are harder to treat, longer illnesses and increasing mortality.</p><p>Bacteriophages offer a natural, specific and effective route for targeting drug-resistant bacteria.</p><div><ShieldPlus/> A promising tool against AMR</div></aside>
     </section>
 
     <section className="intro-grid page-width" id="about">
-      <Info icon={Building2} title="About the Repository" text="A structured platform for cataloguing phages, their hosts, isolation context, characterization, genomic data, protocols and provenance."/>
-      <Info icon={Microscope} title="What are Bacteriophages?" text="Bacteriophages are viruses that infect bacteria. Their host specificity, diversity and biology make them important research tools."/>
-      <Info icon={ShieldPlus} title="Why Phages for AMR?" text="Phage research can support investigation of drug-resistant bacterial pathogens, biofilms, diagnostics and phage-based interventions."/>
-      <Info icon={Target} title="Our Mission" text="Make phage records findable, comparable, citable and reusable while preserving the laboratory context needed to reproduce and extend research."/>
+      <Info icon={Building2} title="About GTU" text="Gujarat Technological University is committed to quality technical education, cutting-edge research and interdisciplinary innovation addressing real-world challenges including AMR."/>
+      <Info icon={Microscope} title="What are Bacteriophages?" text="Bacteriophages are viruses that infect and kill bacteria. They are abundant biological entities with a vital role in microbial ecology and evolution."/>
+      <Info icon={ShieldPlus} title="Why Phages for AMR?" text="Phages are highly specific to bacterial hosts and offer a safe, sustainable and targeted route for investigating multidrug-resistant pathogens."/>
+      <Info icon={Target} title="Our Mission" text="Build an accessible repository, advance phage research and translate discoveries into solutions that improve public health."/>
     </section>
 
     <section className="value-strip page-width">
